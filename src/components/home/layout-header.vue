@@ -11,16 +11,29 @@
             <el-row type='flex' justify='end' align='middle'>
                <el-input style="width:200px;margin-right:10px;"  placeholder='请输入内容' prefix-icon='el-icon-search'></el-input>
                 <span>消息</span>
-                <img src="../../assets/img/avatar.jpg" alt="">
+                <!-- 若img是固定地址的话 在代码编译时 会将img的图片编译成base64的字符串，此时是可以预览的；
+                但本项目中图片地址有可能是固定有可能不是 是个动态变量 ；
+                img是动态变量时 给一个相对地址是不能让图片显示的；
+                如果想显示 需要先将图片转化成变量 在动态显示 -->
+                <img :src="userInfo.photo?userInfo.photo:defaultImg" alt="">
+                <!-- 用户也有可能不传图片 此时photo为空 需设默认头像 so需判断 这里采用三元表达式 -->
                 <!-- 下拉菜单 -->
-                <el-dropdown>
+                <el-dropdown @command='clickMenu'>
+                    <!-- 打开主页后需获取用户信息 即调用接口
+                    查询用户信息 展示到页面 -->
                     <!-- 匿名插槽 -->
-                    <span>我有橡胶果实<i class="el-icon-arrow-down "></i></span>
+                    <!-- 将获取到的用户信息放到页面上 -->
+
+                    <span>{{userInfo.name}}<i class="el-icon-arrow-down "></i></span>
                     <!-- 具名插槽 -->
+                    <!-- 当点击下拉菜单项时 需触发对应的事件 so添加指令事件
+                    步骤：1.给el-dropdown组件标签添加监听事件 @command='clickMenu'；
+                    2.给el-dropdown-item 标签上添加command='属性名'属性，组件上监听该属性；
+                    3. 在Vue实例上添加监听方法 传入command参数，根据情况添加方法 -->
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>个人信息</el-dropdown-item>
-                        <el-dropdown-item>git地址</el-dropdown-item>
-                        <el-dropdown-item>退出</el-dropdown-item>
+                        <el-dropdown-item command='info'>个人信息</el-dropdown-item>
+                        <el-dropdown-item command='git'>git地址</el-dropdown-item>
+                        <el-dropdown-item command='lgout'>退出</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-row>
@@ -30,7 +43,44 @@
 
 <script>
 export default {
+  data () {
+    return {
+      userInfo: {}, // 定义一个数据对象接收请求回来的数据
+      defaultImg: require('../../assets/img/avatar.jpg')// 先用require将图片转化成一个变量
+    }
+  },
+  methods: {
+    clickMenu (command) {
+      if (command === 'info') {
 
+      } else if (command === 'git') {
+        // 跳转到git地址 跨项目跳转用window.location
+        window.location.href = 'https://github.com/shuiruohanyu/90heimatoutiao'
+      } else {
+        // 退出 删除令牌 回到登录页
+        window.localStorage.removeItem('user-token')
+        this.$router.push('/login')
+      }
+    }
+
+  },
+  // 一进入页面就进行查询 so在Vue实例创建之后（即用created钩子函数） 发送请求
+  created () {
+    //   获取token令牌
+    let token = localStorage.getItem('user-token')
+    this.$axios({
+      url: '/user/profile',
+      // 根据接口文件 需传headers参数
+      headers: {
+        //   headers参数需Bearer空格 拼上token令牌
+        Authorization: `Bearer ${token}`
+      }
+    }).then(res => {
+      // 根据接口文档 请求成功返回的数据在res的data的data中
+      // 成功后需将获取到的数据给当前实例的数据对象 用来更新页面
+      this.userInfo = res.data.data
+    })
+  }
 }
 </script>
 
@@ -47,6 +97,8 @@ export default {
         }
         .right {
             img {
+                width: 40px;
+                height: 40px;
                 margin: 0 10px;
                 border-radius: 50%;
             }
