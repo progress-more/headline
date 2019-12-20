@@ -8,7 +8,7 @@
         <el-container>
             <el-header>
                 <!-- 一般组件 -->
-                右侧头部
+
                 <layout-header></layout-header>
             </el-header>
             <el-main>
