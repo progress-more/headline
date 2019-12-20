@@ -69,9 +69,30 @@ export default {
     submitLogin () {
       //   提交时手动校验整个表单
       // 需获取当前表单DOM元素 即添加ref属性
-      this.$refs.myForm.validate(function (isOK) {
+      this.$refs.myForm.validate((isOK) => {
         if (isOK) {
-          console.log('校验通过，开始调用登录接口')
+          // 校验通过，开始调用登录接口
+          // 对token令牌进行前端存储 以便后续接口访问使用
+        //  axios参数分为 body参数和 get地址参数
+        // body参数在axios 的data中
+        // get参数在 axios 的params中
+          this.$axios({
+            url: '/authorizations', // 请求地址 axios 没有指定类型 默认走get类型
+            method: 'post', // 类型
+            data: this.loginForm// body参数
+          }).then(res => {
+            console.log(res)
+            // 用户信息匹配时
+            // 前端缓存 登陆成功返回给我们的令牌 且跳转到主页
+            window.localStorage.setItem('user-token', res.data.data.token)
+            this.$router.push('/home')
+          }).catch(() => {
+            // 若错误 提示（警告）一下用户
+            this.$message({
+              type: 'warning',
+              message: '手机号或验证码错误！'
+            })
+          })
         }
       })
     }
