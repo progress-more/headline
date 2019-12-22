@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
+import './permission'// 在路由之前引入路由拦截器
 import router from './router'
 // 安装好elementui后 需在main.js中引入并注册
 import ElementUI from 'element-ui'// 引入UI
