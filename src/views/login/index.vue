@@ -86,12 +86,6 @@ export default {
             // 前端缓存 登陆成功返回给我们的令牌 且跳转到主页
             window.localStorage.setItem('user-token', res.data.data.token)
             this.$router.push('/home')
-          }).catch(() => {
-            // 若错误 提示（警告）一下用户
-            this.$message({
-              type: 'warning',
-              message: '手机号或验证码错误！'
-            })
           })
         }
       })
