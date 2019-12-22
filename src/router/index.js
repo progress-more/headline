@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/home'
 import login from '../views/login'
 import homeMain from '../views/home/home-main.vue'// 引入 主页内容变化区域
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -11,7 +12,8 @@ const routes = [
     path: '/home',
     name: 'home',
     component: Home,
-    children: [{ path: '', component: homeMain }]
+    children: [{ path: '', component: homeMain },
+      { path: 'comment', component: () => import('../views/comment') }]
   },
   { path: '/login', component: login }
   // {
