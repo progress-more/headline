@@ -18,4 +18,14 @@ axios.interceptors.request.use(function (config) {
   return Promise.reject(error)
 })
 
+// 响应拦截器 响应回来到达then之前 拦截
+axios.interceptors.response.use(function (response) {
+  // 请求成功时执行（指状态码）
+  // response 是包含返回数据的对象 在此对返回数据做处理
+  window.console.log(response)
+  return response.data ? response.data : {}
+}, function () {
+  // 请求失败时执行
+})
+
 export default axios
