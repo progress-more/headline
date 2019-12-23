@@ -5,6 +5,7 @@
 import axios from 'axios'
 import router from '../router'
 import { Message } from 'element-ui'
+import JSONBig from 'json-bigint'// 由于json-bigint时处理请求数据的 so 在axios拦截器中引入 并替换原来的写法
 // 设置通用地址 （根据接口地址）
 axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0'
 //  请求拦截器
@@ -19,6 +20,11 @@ axios.interceptors.request.use(function (config) {
   // 对请求失败做处理
   return Promise.reject(error)
 })
+// 安装json-bigint  处理大数字类型
+// 在到达响应拦截器之前 将之前的json.parse()给替换掉
+axios.defaults.transformResponse = [function (data) {
+  return data ? JSONBig.parse(data) : {}
+}]
 
 // 响应拦截器 响应回来到达then之前 拦截
 axios.interceptors.response.use(function (response) {
@@ -55,6 +61,8 @@ axios.interceptors.response.use(function (response) {
   // 获取到状态码 以及需提示的信息后 要将这个信息提示出去
   // 之前都是用this.$message() 但此处this指向已变 so需用elementUI中的单独引用的方法
   Message({ type: 'warning', message })
+  // 这里需要注意 错误执行函数 如果不做任何操作 还会进入到promise then中
+  return Promise.reject(error)// 只要reject就会进入到catch中
 })
 
 export default axios

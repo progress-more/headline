@@ -45,7 +45,7 @@ export default {
     .layout-aside {
 
         background-color: #323745;
-        height: 100vh;
+
         .el-menu {
             border-right:none;
         }

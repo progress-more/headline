@@ -1,7 +1,7 @@
 <template>
     <!-- 用elementUI布局 -->
     <el-container>
-        <el-aside style="width:230px;">
+        <el-aside style="min-height:100vh;background-color:#353b4e;width:230px;">
             <!-- 一般组件 -->
             <layout-aside></layout-aside>
         </el-aside>
