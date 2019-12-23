@@ -27,6 +27,19 @@
                 </template>
             </el-table-column>
         </el-table>
+        <el-row type='flex' justify='center' align='middle' style="height:80px;" >
+          <el-pagination
+  background
+  layout="prev, pager, next"
+  :current-page='page.currentPage'
+  :page-size='page.pageSize'
+  :total="page.total"
+  @current-change='currentChange'>
+</el-pagination>
+<!-- 根据elementUI上 分页组件的标签自定义属性
+给标签绑定需要的属性：当前页，每页条数，总条数等;
+2.当用户点击某一页的时候 需跳到某一页 且更新内容；此时elementUI分页组件上有个事件 需监听下 调用函数即可  -->
+        </el-row>
     </el-card>
 </template>
 
@@ -36,19 +49,33 @@ export default {
   // 先在组件中定义一个数据列表 接收请求回来的评论数据
   data () {
     return {
-      list: []
+      list: [],
+      page: {
+        total: 0, // 文章总条数
+        currentPage: 1, // 当前页码 默认为1
+        pageSize: 10// 每页条数 默认为10
+      }
     }
   },
   methods: {
+    // 页码改变事件
+    currentChange (newpage) {
+      this.page.currentPage = newpage
+      this.getComment()
+    },
     //   设置方法 获取列表数据
     getComment () {
       this.$axios({
         url: '/articles',
-        params: { response_type: 'comment' }
+        params: { response_type: 'comment',
+          page: this.page.currentPage,
+          per_page: this.page.pageSize }
       }).then(res => {
         // console.log(res)
         this.list = res.data.results
         // 获取数据后 将请求回来的数据渲染到页面上
+        // 将文章的总条数 给分页的变量
+        this.page.total = res.data.total_count
       })
     },
     // 定义一个格式化函数 根据评论状态 决定显示信息
