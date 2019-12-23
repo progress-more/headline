@@ -24,10 +24,9 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (response) {
   // 请求成功时执行（指状态码）
   // response 是包含返回数据的对象 在此对返回数据做处理
-  window.console.log(response)
+  // window.console.log(response)
   return response.data ? response.data : {}
 }, function (error) {
-  window.console.dir(error)
   // 请求失败时执行
   // 将请求失败的状态码获取出来 根据状态码设置对应的提示信息
   // 由于每个接口都有状态码 且状态码可能一样 so应该用url地址(error中有个config属性 内有url属性为请求接口地址)+状态码来判断
