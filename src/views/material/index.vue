@@ -1,32 +1,38 @@
 <template>
 <!-- 素材管理组件 -->
-  <el-card>
+  <el-card v-loading='loading'>
         <!-- 标题处可放置面包屑组件 -->
-        <bread-crumb slot="header">
-            <template slot="title">素材管理</template>
-        </bread-crumb>
+      <bread-crumb slot="header">
+          <template slot="title">素材管理</template>
+      </bread-crumb>
+      <el-row type='flex' justify='end'>
+        <!-- 上传组件  默认需要设置action属性放置上传地址 若需自定义上传行为方法 需将action属性设为空 并设置http-request属性 -->
+        <el-upload action='' :http-request= 'uploading' :show-file-list='false'>
+          <el-button type='primary' size='small'>上传图片</el-button>
+        </el-upload>
+      </el-row>
         <!-- 内容部分分为两项 以tab栏形式放置 -->
-        <el-tabs v-model="activeName" @tab-click='changeTab'>
-    <el-tab-pane label="全部图片" name="all">
-      <!-- 将素材渲染到页面上 -->
-      <div class="img-list">
-        <el-card class="img-card" v-for="item in list" :key="item.id">
-          <img :src="item.url" alt="">
-          <el-row class="operate" type='flex' align='middle' justify='space-around'>
-            <i class="el-icon-star-on"></i>
-            <i class="el-icon-delete-solid"></i>
-          </el-row>
-        </el-card>
-      </div>
+      <el-tabs v-model="activeName" @tab-click='changeTab'>
+        <el-tab-pane label="全部图片" name="all">
+        <!-- 将素材渲染到页面上 -->
+        <div class="img-list">
+          <el-card class="img-card" v-for="item in list" :key="item.id">
+            <img :src="item.url" alt="">
+            <el-row class="operate" type='flex' align='middle' justify='space-around'>
+              <i class="el-icon-star-on"></i>
+              <i class="el-icon-delete-solid"></i>
+            </el-row>
+          </el-card>
+        </div>
 
-    </el-tab-pane>
-    <el-tab-pane label="收藏图片" name="collect">
-      <div class="img-list">
-        <el-card class="img-card" v-for="item in list" :key="item.id">
-          <img :src="item.url" alt="">
-        </el-card>
-      </div>
-    </el-tab-pane>
+      </el-tab-pane>
+      <el-tab-pane label="收藏图片" name="collect">
+        <div class="img-list">
+          <el-card class="img-card" v-for="item in list" :key="item.id">
+            <img :src="item.url" alt="">
+          </el-card>
+        </div>
+      </el-tab-pane>
   </el-tabs>
   <!-- 公共分页组件 -->
   <el-row type='flex' justify='center'>
@@ -46,6 +52,7 @@
 export default {
   data () {
     return {
+      loading: false,
       page: {
         total: 0,
         currentPage: 1,
@@ -56,6 +63,21 @@ export default {
     }
   },
   methods: {
+    // 上传图片
+    uploading (params) {
+      // 由于需将图片上传 so需设形参接收 要传的文件就在参数对象的属性中
+      this.loading = true
+      let data = new FormData()
+      data.append('image', params.file)// 文件加入到参数中
+      this.axios({
+        url: '/user/images',
+        method: 'post',
+        data
+      }).then(res => {
+        this.loading = false
+        // 上传成功 重新获取数据
+      })
+    },
     // 改变页码
     changePage (newPage) {
       this.page.currentPage = newPage
