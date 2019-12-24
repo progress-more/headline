@@ -9,7 +9,7 @@
         <!-- 列表部分  表单组件-->
          <!-- 将请求回来的数据渲染到页面上 label表示表头 prop字段名 表示内容区域显示信息 -->
          <!-- el-table 标签上需绑定 要显示的数据数组 -->
-        <el-table :data='list'>
+        <el-table :data='list' v-loading='loading'>
 
             <el-table-column prop = 'title' width = '600px' label = '标题'></el-table-column>
             <el-table-column :formatter='formatterBoolean' prop = 'comment_status' label = '评论状态'></el-table-column>
@@ -49,6 +49,7 @@ export default {
   // 先在组件中定义一个数据列表 接收请求回来的评论数据
   data () {
     return {
+      loading: false,
       list: [],
       page: {
         total: 0, // 文章总条数
@@ -65,6 +66,7 @@ export default {
     },
     //   设置方法 获取列表数据
     getComment () {
+      this.loading = true// 获取评论数据且加载前显示加载进度条
       this.$axios({
         url: '/articles',
         params: { response_type: 'comment',
@@ -76,6 +78,7 @@ export default {
         // 获取数据后 将请求回来的数据渲染到页面上
         // 将文章的总条数 给分页的变量
         this.page.total = res.data.total_count
+        setTimeout(() => { this.loading = false }, 300)
       })
     },
     // 定义一个格式化函数 根据评论状态 决定显示信息
