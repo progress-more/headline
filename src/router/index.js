@@ -13,7 +13,8 @@ const routes = [
     name: 'home',
     component: Home,
     children: [{ path: '', component: homeMain },
-      { path: 'comment', component: () => import('../views/comment') }]
+      { path: 'comment', component: () => import('../views/comment') },
+      { path: 'material', component: () => import('../views/material') }]
   },
   { path: '/login', component: login }
   // {
