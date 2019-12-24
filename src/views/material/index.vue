@@ -28,6 +28,17 @@
       </div>
     </el-tab-pane>
   </el-tabs>
+  <!-- 公共分页组件 -->
+  <el-row type='flex' justify='center'>
+    <el-pagination
+  background
+  layout="prev, pager, next"
+  :total="page.total"
+  :page-size='page.pageSize'
+  :current-page='page.currentPage'
+  @current-change='changePage'>
+</el-pagination>
+  </el-row>
   </el-card>
 </template>
 
@@ -35,14 +46,24 @@
 export default {
   data () {
     return {
+      page: {
+        total: 0,
+        currentPage: 1,
+        pageSize: 8
+      },
       activeName: 'all', // 当前默认选中标签
       list: []// 接收素材数据
     }
   },
   methods: {
+    // 改变页码
+    changePage (newPage) {
+      this.page.currentPage = newPage
+      this.getMaterial()
+    },
     // 点击标签获取相应内容
     changeTab () {
-      // this.page.currentPage = 1
+      this.page.currentPage = 1// 切换页签 强制回第一页
       this.getMaterial()
     },
     //   点击素材管理 获取素材信息（用变量接收） 并渲染得到页面上
@@ -50,11 +71,14 @@ export default {
       this.$axios({
         url: '/user/images',
         params: {
+          page: this.page.currentPage,
+          per_page: this.page.pageSize,
           collect: this.activeName === 'collect'// 判断当前点击的标签是不是收藏 true获取收藏图片 false获取全部图片
         }
       }).then(res => {
         console.log(res)
-        this.list = res.data.results// 请求成功 接收数据
+        this.list = res.data.results// 请求成功 接收数据 可能全部 可能收藏
+        this.page.total = res.data.total_count
       })
     }
   },
