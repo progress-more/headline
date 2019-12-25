@@ -19,8 +19,9 @@
           <el-card class="img-card" v-for="item in list" :key="item.id">
             <img :src="item.url" alt="">
             <el-row class="operate" type='flex' align='middle' justify='space-around'>
-              <i class="el-icon-star-on"></i>
-              <i class="el-icon-delete-solid"></i>
+              <!-- 需要根据当前是否收藏的状态 来决定是否添加字体颜色 -->
+              <i @click='collectOrCancel(item)' :style="{ color: item.is_collected ? 'red' : '#000' }" class="el-icon-star-on"></i>
+              <i @click='delMaterial(item.id)' class="el-icon-delete-solid"></i>
             </el-row>
           </el-card>
         </div>
@@ -63,13 +64,36 @@ export default {
     }
   },
   methods: {
+    // 删除图片素材
+    delMaterial (id) {
+      this.$confirm('你确定要删除此图片吗？').then(() => {
+        this.$axios({
+          method: 'delete',
+          url: `/user/images/${id}`
+        }).then(() => {
+          this.getMaterial()// 重新获取数据
+        })
+      })
+    },
+    // 收藏或取消收藏
+    collectOrCancel (item) {
+      this.$axios({
+        url: `/user/images/${item.id}`,
+        method: 'put',
+        data: {
+          collect: !item.is_collected
+        }
+      }).then(res => {
+        this.getMaterial()
+      })
+    },
     // 上传图片
     uploading (params) {
       // 由于需将图片上传 so需设形参接收 要传的文件就在参数对象的属性中
       this.loading = true
       let data = new FormData()
       data.append('image', params.file)// 文件加入到参数中
-      this.axios({
+      this.$axios({
         url: '/user/images',
         method: 'post',
         data
@@ -98,7 +122,6 @@ export default {
           collect: this.activeName === 'collect'// 判断当前点击的标签是不是收藏 true获取收藏图片 false获取全部图片
         }
       }).then(res => {
-        console.log(res)
         this.list = res.data.results// 请求成功 接收数据 可能全部 可能收藏
         this.page.total = res.data.total_count
       })
