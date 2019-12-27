@@ -34,15 +34,18 @@
       <el-row class="total" type='flex' align='middle'>
         <span>共找到1000条符合条件的内容</span>
       </el-row>
-      <div class="article-item" v-for="item in 100" :key="item">
+      <div class="article-item" v-for="item in list" :key="item.id.toString()">
          <!-- 左侧 -->
          <div class="left">
-           <img src="../../assets/img/light01.jpg" alt="">
+           <!-- img中的图片路径 根据获取文章列表接口返回的数据总封面图片数组的长度 判断有几张图片或没有-->
+           <img :src="item.cover.images.length ? item.cover.images[0] : defaultImg" alt="">
            <div class="info">
-             <span>90期的弟弟们</span>
-             <!-- tag标签 -->
-             <el-tag>标签一</el-tag>
-             <span class="date">2019-12-24 15:07:01</span>
+             <span>{{item.title}}</span>
+             <!-- tag标签 文章状态 0-草稿，1-待审核，2-审核通过，3-审核失败，4-已删除 -->
+             <!-- 因为此时状态为多个 三元表达式满足不了 so用过滤器 -->
+             <!-- 由于tag标签的颜色即type类型 也随文章状态的变化而变化 so 需再设一个过滤器 -->
+             <el-tag :type='item.status |filterType'>{{item.status | filterStatus}}</el-tag>
+             <span class="date">{{item.pubdate}}</span>
            </div>
          </div>
          <!-- 右侧 -->
@@ -63,10 +66,57 @@ export default {
         channel_id: null, // 默认不选中任何一个分类
         dateRange: []// 定义数组变量存储日期范围数据
       },
-      channels: []// 设置数组接收返回的频道数据
+      channels: [], // 设置数组接收返回的频道数据
+      list: [], // 设置数组接收返回的文章数据
+      images: [], // 接收返回的封面图片数据
+      defaultImg: require('../../assets/img/light01.jpg')
+    }
+  },
+  // 文章状态过滤器
+  filters: {
+
+    filterStatus (value) {
+      // 文章状态 0-草稿，1-待审核，2-审核通过，3-审核失败，4-已删除
+      // 根据状态返回相应的内容 放置页面上
+      switch (value) {
+        case 0:
+          return '草稿'
+        case 1:
+          return '待审核'
+        case 2:
+          return '审核通过'
+        case 3:
+          return '审核失败'
+        default:
+          break
+      }
+    },
+    filterType (value) {
+      // 文章状态 0-草稿，1-待审核，2-审核通过，3-审核失败，4-已删除
+      // 根据状态返回相应的内容 放置页面上
+      switch (value) {
+        case 0:
+          return 'warning'
+        case 1:
+          return 'info'
+        case 2:
+          return ''
+        case 3:
+          return 'danger'
+        default:
+          break
+      }
     }
   },
   methods: {
+    // 页面结构创建完成后 需将页面上的数据变成动态的 so 请求文章数据
+    getArticles () {
+      this.$axios({
+        url: '/articles'
+      }).then(res => {
+        this.list = res.data.results// 获取文章列表数据
+      })
+    },
     // 获取所有频道
     getChannels () {
       this.$axios({
@@ -78,6 +128,7 @@ export default {
   },
   created () {
     this.getChannels()
+    this.getArticles()
   }
 }
 </script>
