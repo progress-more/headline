@@ -66,10 +66,24 @@ export default {
       })
     },
     // 发表或保存时 手动校验所有表单
-    publishArticle () {
+    publishArticle (draft) {
       this.$refs.publishForm.validate(isOk => {
         if (isOk) {
-          console.log('校验成功')
+          this.$axios({
+            url: '/articles',
+            method: 'post',
+            params: {
+              draft
+            },
+            data: this.formData
+          }).then(() => {
+            this.$message({
+              type: 'success',
+              message: '保存成功'
+            })
+            // 跳转到文章列表页
+            this.$router.push('/home/articles')
+          })
         }
       })
     }
