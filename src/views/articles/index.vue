@@ -71,6 +71,16 @@
            <span @click='deleteMaterial(item.id)'><i class="el-icon-delete"></i>删除</span>
          </div>
       </div>
+      <el-row type='flex' justify='center' align='middle' style="height:80px;">
+        <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="page.total"
+        :page-size='page.pageSize'
+        :current-page='page.currentPage'
+        @current-change='changePage'>
+        </el-pagination>
+      </el-row>
   </el-card>
 </template>
 
@@ -78,6 +88,11 @@
 export default {
   data () {
     return {
+      page: {
+        total: 0,
+        pageSize: 10,
+        currentPage: 1
+      },
       searchForm: {
         status: 5, // 默认状态为全部
         channel_id: null, // 默认不选中任何一个分类
@@ -136,6 +151,13 @@ export default {
     }
   },
   methods: {
+    // 改变页码
+    changePage (newPage) {
+      this.page.currentPage = newPage// 最新页码给当前页面
+      // 由于当选择有条件时 改变页码也要附加当时条件 so需将改变条件的参数 传入获取文章的函数中
+      // 此时跟删选文章重复颇多 需提取
+      this.getConditionArticles()
+    },
     // 删除文章
     deleteMaterial (id) {
       // 先提示再请求删除
@@ -148,14 +170,21 @@ export default {
             type: 'success',
             message: '删除成功'
           })
-          this.getArticles()
+          this.getConditionArticles()
         })
       })
     },
     // 搜索条件改变时
     changeCondition () {
+      // 重置页码为第一页
+      this.page.currentPage = 1
+      this.getConditionArticles()
+    },
+    getConditionArticles () {
       // 当条件改变时 请求参数改变 so声明一个参数对象变量
       let params = {
+        page: this.page.currentPage, // 当前页码
+        per_page: this.page.pageSize,
         status: this.searchForm.status === 5 ? null : this.searchForm.status, // 由于5是前端自己定义的标识 若是5 则什么也不传 为全部
         channel_id: this.searchForm.channel_id,
         begin_pubdate: this.searchForm.dateRange && this.searchForm.dateRange.length ? this.searchForm.dateRange[0] : null, // 起始时间
@@ -170,6 +199,7 @@ export default {
         params
       }).then(res => {
         this.list = res.data.results// 获取文章列表数据
+        this.page.total = res.data.total_count
       })
     },
     // 获取所有频道
@@ -183,7 +213,8 @@ export default {
   },
   created () {
     this.getChannels()
-    this.getArticles()
+    // 第一次获取文章数据时 没有参数 但是每页条数与当前页是要传的 又 这的获取函数只执行一次 so直接写默认页就行
+    this.getArticles({ page: 1, per_page: 10 })
   }
 }
 </script>
