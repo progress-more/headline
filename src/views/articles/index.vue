@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card class="articles">
       <bread-crumb slot="header">
         <template slot="title">
             文章列表
@@ -30,6 +30,27 @@
           <el-date-picker v-model="searchForm.dateRange" type='daterange'></el-date-picker>
         </el-form-item>
       </el-form>
+      <!-- 文章内容部分 -->
+      <el-row class="total" type='flex' align='middle'>
+        <span>共找到1000条符合条件的内容</span>
+      </el-row>
+      <div class="article-item" v-for="item in 100" :key="item">
+         <!-- 左侧 -->
+         <div class="left">
+           <img src="../../assets/img/light01.jpg" alt="">
+           <div class="info">
+             <span>90期的弟弟们</span>
+             <!-- tag标签 -->
+             <el-tag>标签一</el-tag>
+             <span class="date">2019-12-24 15:07:01</span>
+           </div>
+         </div>
+         <!-- 右侧 -->
+         <div class="right">
+           <span><i class="el-icon-edit"></i>修改</span>
+           <span><i class="el-icon-delete"></i>删除</span>
+         </div>
+      </div>
   </el-card>
 </template>
 
@@ -61,6 +82,48 @@ export default {
 }
 </script>
 
-<style>
+<style lang='less' scoped>
+  .articles {
+    .total {
+      height: 60px;
+      border-bottom:  1px dashed #ccc;
+    }
+    .article-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px 0;
+      border-bottom: 1px solid #f2f3f5;
+      .left {
+        display: flex;
+        img {
+          width: 180px;
+          height: 120px;
+          border-radius: 5px;
+        }
+        .info {
+          display: flex;
+          flex-direction: column;
+          margin-left: 10px;
+          height: 120px;
+          justify-content: space-around;
+          .date {
+            color: #999;
+            font-size: 12px;
+          }
+          .el-tag {
+            text-align: center;
+            width: 60px;
+          }
+        }
+      }
+      .right {
+        span {
+          font-size: 14px;
+          margin-right: 8px;
+          cursor: pointer;
 
+        }
+      }
+    }
+  }
 </style>
