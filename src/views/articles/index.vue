@@ -68,7 +68,7 @@
          <!-- 右侧 -->
          <div class="right">
            <span><i class="el-icon-edit"></i>修改</span>
-           <span><i class="el-icon-delete"></i>删除</span>
+           <span @click='deleteMaterial(item.id)'><i class="el-icon-delete"></i>删除</span>
          </div>
       </div>
   </el-card>
@@ -111,7 +111,7 @@ export default {
         case 1:
           return '待审核'
         case 2:
-          return '审核通过'
+          return '已发表'
         case 3:
           return '审核失败'
         default:
@@ -136,6 +136,22 @@ export default {
     }
   },
   methods: {
+    // 删除文章
+    deleteMaterial (id) {
+      // 先提示再请求删除
+      this.$confirm('是否确定要删除文件?').then(() => {
+        this.$axios({
+          url: `/articles/${id.toString()}`,
+          method: 'delete'
+        }).then(res => {
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          })
+          this.getArticles()
+        })
+      })
+    },
     // 搜索条件改变时
     changeCondition () {
       // 当条件改变时 请求参数改变 so声明一个参数对象变量
