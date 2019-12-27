@@ -9,6 +9,15 @@
       <el-form style="padding-left:50px;">
         <el-form-item label='文章状态:'>
           <!-- 放置单选组 文章状态，0-草稿，1-待审核，2-审核通过，3-审核失败，4-已删除，不传为全部-->
+          <!-- <el-radio-group v-model="searchForm.status" @change='changeCondition'>
+           由于每个单选项必须有label属性 so在前端给全部定义一个状态码 -->
+            <!-- <el-radio :label="5">全部</el-radio>
+            <el-radio :label="0">草稿</el-radio>
+            <el-radio :label="1">待审核</el-radio>
+            <el-radio :label="2">审核通过</el-radio>
+            <el-radio :label="3">审核失败</el-radio>
+          </el-radio-group> -->
+          <!-- 第二种 深度监听 -->
           <el-radio-group v-model="searchForm.status">
            <!-- 由于每个单选项必须有label属性 so在前端给全部定义一个状态码 -->
             <el-radio :label="5">全部</el-radio>
@@ -17,18 +26,26 @@
             <el-radio :label="2">审核通过</el-radio>
             <el-radio :label="3">审核失败</el-radio>
           </el-radio-group>
-          {{ searchForm }}
         </el-form-item>
         <el-form-item label='频道列表:'>
           <!-- 频道是由后台返回的数据 so需先请求频道数据-->
+          <!-- <el-select @change="changeCondition" placeholder='请选择' v-model="searchForm.channel_id">
+            <el-option v-for="item in channels" :key="item.id" :label='item.name' :value='item.id'></el-option>
+          </el-select> -->
+          <!-- 第二种 深度监听 -->
           <el-select placeholder='请选择' v-model="searchForm.channel_id">
             <el-option v-for="item in channels" :key="item.id" :label='item.name' :value='item.id'></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label='时间选择:'>
           <!-- 日期选择器 选择日期后会生成一个数组 so应用一个数组变量存储该数据 而获取文章接口需传的参数是分开的-->
-          <el-date-picker v-model="searchForm.dateRange" type='daterange'></el-date-picker>
+          <!-- 日期选择器默认生成的数据格式 不符合参数格式需转化 用组件中属性 -->
+          <!-- <el-date-picker value-format='yyyy-MM-dd' @change="changeCondition" v-model="searchForm.dateRange" type='daterange'></el-date-picker> -->
+          <!-- 第二种 深度监听 -->
+          <el-date-picker value-format='yyyy-MM-dd' v-model="searchForm.dateRange" type='daterange'></el-date-picker>
         </el-form-item>
+        <!-- 搜索区域有三个条件 为组合条件 当任何一个发生变化时 都要先组装条件 统一发送请求 ;
+        两种方式：监听每个组件的change事件；用watch深度监听 -->
       </el-form>
       <!-- 文章内容部分 -->
       <el-row class="total" type='flex' align='middle'>
@@ -72,6 +89,16 @@ export default {
       defaultImg: require('../../assets/img/light01.jpg')
     }
   },
+  watch: {
+    searchForm: {
+      deep: true,
+      handler () {
+        // 此时数据已最新 this指向组件实例 参数改变
+        // alert(this.searchForm.status)
+        this.changeCondition()
+      }
+    }
+  },
   // 文章状态过滤器
   filters: {
 
@@ -109,10 +136,22 @@ export default {
     }
   },
   methods: {
+    // 搜索条件改变时
+    changeCondition () {
+      // 当条件改变时 请求参数改变 so声明一个参数对象变量
+      let params = {
+        status: this.searchForm.status === 5 ? null : this.searchForm.status, // 由于5是前端自己定义的标识 若是5 则什么也不传 为全部
+        channel_id: this.searchForm.channel_id,
+        begin_pubdate: this.searchForm.dateRange && this.searchForm.dateRange.length ? this.searchForm.dateRange[0] : null, // 起始时间
+        end_pubdate: this.searchForm.dateRange && this.searchForm.dateRange.length > 1 ? this.searchForm.dateRange[1] : null
+      }
+      this.getArticles(params)
+    },
     // 页面结构创建完成后 需将页面上的数据变成动态的 so 请求文章数据
-    getArticles () {
+    getArticles (params) {
       this.$axios({
-        url: '/articles'
+        url: '/articles',
+        params
       }).then(res => {
         this.list = res.data.results// 获取文章列表数据
       })
