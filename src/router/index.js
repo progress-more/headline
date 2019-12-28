@@ -16,7 +16,8 @@ const routes = [
       { path: 'comment', component: () => import('../views/comment') },
       { path: 'material', component: () => import('../views/material') },
       { path: 'articles', component: () => import('../views/articles') },
-      { path: 'publish', component: () => import('../views/publish') }]
+      { path: 'publish', component: () => import('../views/publish') },
+      { path: 'publish/:articleId', component: () => import('../views/publish') }]
   },
   { path: '/login', component: login }
   // {

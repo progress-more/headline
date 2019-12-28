@@ -40,19 +40,39 @@ export default {
     return {
       channels: [], // 接收频道数据
       formData: {
-        title: '',
-        content: '',
+        title: '', // 文章标题
+        content: '', // 文章内容
         cover: {
           type: 0, // 封面类型 -1:自动，0-无图，1-1张，3-3张
-          images: []
+          images: [] // 放置封面地址的数组
         },
-        channel_id: null
+        channel_id: null // 频道id
       }, // 定义个数据对象 接收表单数据
       rules: {
         //   校验规则  标题 内容 频道必填项（校验字段名：[{},{}]）
         title: [{ required: true, message: '标题不能为空' }, { min: 5, max: 30, message: '标题长度在5-30字符之间' }],
         content: [{ required: true, message: '文章内容不能为空' }],
         channel_id: [{ required: true, message: '文章频道不能为空' }]
+      }
+    }
+  },
+  watch: {
+    // 处理 两个地址对应一个组件跳转的时候 组件不销毁 数据没有重置的问题
+    $route: function (to, from) {
+      // 这里to是个对象 两个功能跳转时的不同 是params的不同
+      if (to.params.articleId) {
+        // 修改页面
+      } else {
+        // 发布页面 需清空内容（即表单数据清空即可 数据影响视图）
+        this.formData = {
+          title: '',
+          content: '',
+          cover: {
+            type: 0, // 封面类型 -1:自动，0-无图，1-1张，3-3张
+            images: []
+          },
+          channel_id: null
+        }
       }
     }
   },
@@ -86,12 +106,26 @@ export default {
           })
         }
       })
+    },
+    // 根据传递的id 获取对应文章信息 并渲染页面
+    getArticleById (articleId) {
+      this.$axios({
+        url: `/articles/${articleId}`
+      }).then(res => {
+      // 由于定义表单数据formData的时  就是根据该接口返回数据的内容定义的
+      // so 除了表单中没有的id 外其他的都有 所以可用表单数据接收 返回数据
+        this.formData = res.data
+      })
     }
 
   },
+
   //   钩子函数 实例构建完成后执行的函数
   created () {
     this.getChannels()
+    // 当用户点击修改 跳转到该页面时 需在该组件实例一创建就获取地址栏内 传递的文章id参数
+    let { articleId } = this.$route.params
+    articleId && this.getArticleById(articleId) // 如果有id值时才可调用此方法
   }
 
 }

@@ -67,7 +67,7 @@
          </div>
          <!-- 右侧 -->
          <div class="right">
-           <span><i class="el-icon-edit"></i>修改</span>
+           <span @click='toModify(item.id)'><i class="el-icon-edit"></i>修改</span>
            <span @click='deleteMaterial(item.id)'><i class="el-icon-delete"></i>删除</span>
          </div>
       </div>
@@ -151,6 +151,13 @@ export default {
     }
   },
   methods: {
+    // 去修改页面 实际就是发布页面
+    // 但是修改页面需要带参数 so需另设一个路由 与发布页面区分开 否则会相互影响
+    toModify (id) {
+      this.$router.push(`/home/publish/${id.toString()}`)
+      // 此时当两个不同的路由地址 对应同一个组件时 相互跳转 组件并未销毁  so 数据不会重置 两个功能会相互影响
+      // so 需用到Vue官网的解决方法 在共同的组件上监听$route
+    },
     // 改变页码
     changePage (newPage) {
       this.page.currentPage = newPage// 最新页码给当前页面
