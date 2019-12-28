@@ -8,9 +8,10 @@
             <el-input v-model="formData.title" style="width:300px;" placeholder='文章名称'></el-input>
         </el-form-item>
         <el-form-item prop='content' label='内容:'>
-            <el-input v-model="formData.content" :rows='8' type='textarea'></el-input>
+            <!-- <el-input v-model="formData.content" :rows='8' type='textarea'></el-input> -->
+            <quill-editor style="height:200px;" v-model="formData.content"></quill-editor>
         </el-form-item>
-        <el-form-item prop='cover' label='封面:'>
+        <el-form-item prop='cover' label='封面:' style="margin-top:120px;">
             <!-- 封面类型 -1:自动，0-无图，1-1张，3-3张 -->
             <el-radio-group v-model="formData.cover.type">
                 <el-radio label='1'>单图</el-radio>
