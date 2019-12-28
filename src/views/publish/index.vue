@@ -89,9 +89,12 @@ export default {
     publishArticle (draft) {
       this.$refs.publishForm.validate(isOk => {
         if (isOk) {
+          // 校验完成 发送请求时 需判断时发布文章还是修改文章
+          // 即根据 地址栏中有没有articleID决定 so获取地址栏携带参数 判断有无articleID
+          let { articleId } = this.$route.params
           this.$axios({
-            url: '/articles',
-            method: 'post',
+            url: articleId ? `/articles/${articleId}` : '/article',
+            method: articleId ? 'put' : 'post',
             params: {
               draft
             },
