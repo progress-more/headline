@@ -21,8 +21,7 @@
                 <el-radio :label='0'>无图</el-radio>
                 <el-radio :label='-1'>自动</el-radio>
             </el-radio-group>
-            {{formData.cover}}
-            <cover-image :list='formData.cover.images'></cover-image>
+            <cover-image @selectTwoImg='receiveImg' :list='formData.cover.images'></cover-image>
         </el-form-item>
         <el-form-item prop='channel_id' label='频道:'>
             <el-select v-model="formData.channel_id" placeholder='请选择'>
@@ -93,6 +92,18 @@ export default {
     // }
   },
   methods: {
+    // 接收封面组件传递的地址
+    receiveImg (url, index) {
+      // 现在拿到的是地址
+      // 但是需要改的是数组 so就需要知到点的是第几个
+      // so在点击弹出对话框准备上传时 就要传递点的是数组中的哪个
+      // 在封面组件中传递
+      // this.formData.cover.images[index] = url //这种写法错误 不能保证每次都成功
+      // 因为数据变化是因为vuejs 检测到了数据变化 但Vuejs对于数组的更新检测
+      // 不能通过索引来处理 （Vue官网上有介绍）需要替换数组的方法
+      // 在不改变原数组的情况下 生成新数组
+      this.formData.cover.images = this.formData.cover.images.map((item, i) => i === index ? url : item)
+    },
     // 当只是查询时 文章的状态也会改变 此时若只是监听那么查询时图片便显示不出来
     // 再做操作 太过麻烦 so提取改变类型的方法 绑定el组件的change事件 那样就只会在点击的时候地址数组才会变空
     changeType () {
