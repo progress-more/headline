@@ -103,6 +103,12 @@ export default {
       // 不能通过索引来处理 （Vue官网上有介绍）需要替换数组的方法
       // 在不改变原数组的情况下 生成新数组
       this.formData.cover.images = this.formData.cover.images.map((item, i) => i === index ? url : item)
+      // this.formData.cover.images = this.formData.cover.images.map(function (item, i) {
+      //   if (i === index) {
+      //     return url
+      //   }
+      //   return item
+      // })
     },
     // 当只是查询时 文章的状态也会改变 此时若只是监听那么查询时图片便显示不出来
     // 再做操作 太过麻烦 so提取改变类型的方法 绑定el组件的change事件 那样就只会在点击的时候地址数组才会变空
@@ -131,7 +137,7 @@ export default {
           // 即根据 地址栏中有没有articleID决定 so获取地址栏携带参数 判断有无articleID
           let { articleId } = this.$route.params
           this.$axios({
-            url: articleId ? `/articles/${articleId}` : '/article',
+            url: articleId ? `/articles/${articleId}` : '/articles',
             method: articleId ? 'put' : 'post',
             params: {
               draft

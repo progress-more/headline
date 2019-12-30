@@ -22,7 +22,6 @@ export default {
   methods: {
     // 接收选择图片组件 传递的图片地址
     receiveImg (url) {
-      alert(this.selectIndex)
       //  此时展现的图片都是从publish父组件中 传递过来的
       // props 只能读取 不能修改 只能在publish中改 需再向父组件中传值
       this.$emit('selectTwoImg', url, this.selectIndex) // 再次传递

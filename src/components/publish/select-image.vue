@@ -21,7 +21,11 @@
             </el-pagination>
           </el-row>
       </el-tab-pane>
-      <el-tab-pane label='上传图片' name='upload'>上传图片</el-tab-pane>
+      <el-tab-pane label='上传图片' name='upload'>
+        <el-upload action='' :show-file-list='false' :http-request='uploadImg' class="uploadImg">
+          <i class="el-icon-plus"></i>
+        </el-upload>
+      </el-tab-pane>
 
   </el-tabs>
 </template>
@@ -40,6 +44,20 @@ export default {
     }
   },
   methods: {
+    // 点击上传图片
+    uploadImg (params) {
+      let data = new FormData()
+      data.append('image', params.file) // 加入参数
+      this.$axios({
+        url: '/user/images',
+        method: 'post',
+        data
+      }).then(res => {
+        // 请求成功后 与素材库中一样 将图片地址传递给封面组件
+        // 即调用clickImg方法
+        this.clickImg(res.data.url)
+      })
+    },
     //   点击图片时触发
     clickImg (url) {
     //   将图片地址传给封面组件 即子传父
@@ -81,5 +99,15 @@ export default {
                 height: 100%;
             }
         }
+    }
+    .uploadImg {
+      display: flex;
+      justify-content: center;
+      i {
+        font-size:50px;
+        padding: 50px;
+        border: 1px dashed #ccc;
+        border-radius: 5px;
+      }
     }
 </style>
