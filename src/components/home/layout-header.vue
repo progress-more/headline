@@ -52,7 +52,7 @@ export default {
   methods: {
     clickMenu (command) {
       if (command === 'info') {
-
+        this.$router.push('/home/userInfo')
       } else if (command === 'git') {
         // 跳转到git地址 跨项目跳转用window.location
         window.location.href = 'https://github.com/shuiruohanyu/90heimatoutiao'
