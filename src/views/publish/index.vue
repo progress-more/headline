@@ -15,13 +15,14 @@
             <!-- 封面类型 -1:自动，0-无图，1-1张，3-3张 -->
             <!-- 由于封面类型及上传都较为复杂 so单选组下应再放置一个组件单独做这块内容 -->
             <!-- 新组件中 上传区域的个数由封面的地址数组决定 so 监听数据变化 -->
-            <el-radio-group v-model="formData.cover.type">
-                <el-radio label='1'>单图</el-radio>
-                <el-radio label='3'>三图</el-radio>
-                <el-radio label='0'>无图</el-radio>
-                <el-radio label='-1'>自动</el-radio>
+            <el-radio-group @change='changeType' v-model="formData.cover.type">
+                <el-radio :label='1'>单图</el-radio>
+                <el-radio :label='3'>三图</el-radio>
+                <el-radio :label='0'>无图</el-radio>
+                <el-radio :label='-1'>自动</el-radio>
             </el-radio-group>
             {{formData.cover}}
+            <cover-image :list='formData.cover.images'></cover-image>
         </el-form-item>
         <el-form-item prop='channel_id' label='频道:'>
             <el-select v-model="formData.channel_id" placeholder='请选择'>
@@ -78,8 +79,23 @@ export default {
           channel_id: null
         }
       }
-    },
-    'formData.cover.type': function () {
+    }
+    // 监听封面类型的改变
+    // 'formData.cover.type': function () {
+    //   // alert(this.formData.cover.type)
+    //   if (this.formData.cover.type === 0 || this.formData.cover.type === -1) {
+    //     this.formData.cover.images = [] // 无图或者自动
+    //   } else if (this.formData.cover.type === 1) {
+    //     this.formData.cover.images = [''] // 单图
+    //   } else if (this.formData.cover.type === 3) {
+    //     this.formData.cover.images = ['', '', ''] // 3图
+    //   }
+    // }
+  },
+  methods: {
+    // 当只是查询时 文章的状态也会改变 此时若只是监听那么查询时图片便显示不出来
+    // 再做操作 太过麻烦 so提取改变类型的方法 绑定el组件的change事件 那样就只会在点击的时候地址数组才会变空
+    changeType () {
       if (this.formData.cover.type === 0 || this.formData.cover.type === -1) {
         this.formData.cover.images = [] // 无图或者自动
       } else if (this.formData.cover.type === 1) {
@@ -87,9 +103,7 @@ export default {
       } else if (this.formData.cover.type === 3) {
         this.formData.cover.images = ['', '', ''] // 3图
       }
-    }
-  },
-  methods: {
+    },
     //   获取文章频道
     getChannels () {
       this.$axios({
