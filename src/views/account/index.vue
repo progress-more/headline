@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import eventBus from '../../utils/eventBus'
 // 打开页面 获取用户信息 1.先定义变量接收返回数据 2.请求数据 3.渲染页面
 export default {
   data () {
@@ -68,6 +69,8 @@ export default {
         this.loading = false
         // 请求成功后 应用返回的头像地址 替换页面上的头像地址
         this.formData.photo = res.data.photo
+        // 认为保存成功 通知header组件 更新信息
+        eventBus.$emit('updateUserInfo')
       })
     },
     //   保存用户信息
@@ -83,6 +86,8 @@ export default {
             type: 'success',
             message: '保存用户信息成功'
           })
+          // 认为保存成功 通知header组件 更新信息
+          eventBus.$emit('updateUserInfo')
         })
       })
     },

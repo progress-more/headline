@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import eventBus from '../../utils/eventBus'
 export default {
   data () {
     return {
@@ -50,6 +51,17 @@ export default {
     }
   },
   methods: {
+    // 获取用户信息
+    getUserInfo () {
+      this.$axios({
+        url: '/user/profile'
+      }).then(res => {
+      // 根据接口文档 请求成功返回的数据在res的data的data中
+      // 成功后需将获取到的数据给当前实例的数据对象 用来更新页面
+        this.userInfo = res.data
+      })
+    },
+    // 点击用户信息底下的菜单
     clickMenu (command) {
       if (command === 'info') {
         this.$router.push('/home/userInfo')
@@ -66,13 +78,11 @@ export default {
   },
   // 一进入页面就进行查询 so在Vue实例创建之后（即用created钩子函数） 发送请求
   created () {
-    this.$axios({
-      url: '/user/profile'
-
-    }).then(res => {
-      // 根据接口文档 请求成功返回的数据在res的data的data中
-      // 成功后需将获取到的数据给当前实例的数据对象 用来更新页面
-      this.userInfo = res.data
+    this.getUserInfo()
+    // 实例创建完成 就开始监听
+    eventBus.$on('updateUserInfo', () => {
+      // 认为别人更新了数据 自己也应该更新
+      this.getUserInfo()
     })
   }
 }
