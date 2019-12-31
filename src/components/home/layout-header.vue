@@ -3,7 +3,7 @@
     <el-row class="layout-header" type='flex' align='middle'>
         <!-- 先定义一行 又 分为两部分 so定义两列各占一半-->
         <el-col :span='12' class="left">
-            <i class="el-icon-s-fold"></i>
+            <i @click='collapseOrOpen' :class="{'el-icon-s-unfold':collapse,'el-icon-s-fold':!collapse}"></i>
             <span>江苏传智播客教育科技股份有限公司</span>
         </el-col>
         <!-- 右侧内容需靠右显示 so 第二列内在设一行 设弹性布局 使主轴向右对齐-->
@@ -46,11 +46,19 @@ import eventBus from '../../utils/eventBus'
 export default {
   data () {
     return {
+      collapse: false, // 默认侧边栏展开 图标箭头向左 以此改变图标类名
       userInfo: {}, // 定义一个数据对象接收请求回来的数据
       defaultImg: require('../../assets/img/avatar.jpg')// 先用require将图片转化成一个变量
     }
   },
   methods: {
+    // 折叠或打开侧边栏
+    collapseOrOpen () {
+      this.collapse = !this.collapse // 不是展开就是折叠
+      // 同时 要根据collapse的状态 来改变侧边栏的宽度
+      // 由于侧边栏在另一个组件 so需用eventBus传递事件
+      eventBus.$emit('changeCollapse') // 触发一个事件
+    },
     // 获取用户信息
     getUserInfo () {
       this.$axios({
