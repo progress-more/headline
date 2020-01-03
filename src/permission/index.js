@@ -1,8 +1,10 @@
 // 处理路由拦截器 导航守卫
 import router from '../router'
-
+import progress from 'nprogress'
+import 'nprogress/nprogress.css'
 // 全局前置守卫 当 路由发生变化时 这个方法里的回调函数就会执行
 router.beforeEach(function (to, from, next) {
+  progress.start() // 页面进度条 需在路由跳转时开启
   // 权限拦截，认为有token 就通过 没有 就强制跳转
   // to是要跳转的地址 是个对象 内有path属性是跳转地址
   // 而且我们只需拦截 前往主页或主页下的内容时 才需拦截
@@ -17,4 +19,8 @@ router.beforeEach(function (to, from, next) {
   } else {
     next()
   }
+})
+router.afterEach(() => {
+  // setTimeout(() => progress.done(),1000)
+  progress.done() // 跳转结束时关闭
 })

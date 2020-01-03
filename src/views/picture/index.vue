@@ -51,10 +51,11 @@ export default {
     this.myChart.setOption(this.option)
     this.myChart2.setOption(this.option2)
     setInterval(() => {
-      this.option.series[0].data.map(item => {
-        return item * Math.random() * 10
+      // this.option.series[0].data[0] = Math.random() * 100
+      this.option.series[0].data = this.option.series[0].data.map(item => {
+        return item * Math.random() * 100
       })
-      this.option2.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0
+      this.option2.series[0].data[0].value = (Math.random() * 10).toFixed(2) - 0
       this.myChart2.setOption(this.option2, true)
       this.myChart.setOption(this.option, true)
     }, 2000)
