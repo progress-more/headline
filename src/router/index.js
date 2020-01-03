@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/home'
 import login from '../views/login'
-import homeMain from '../views/home/home-main.vue'// 引入 主页内容变化区域
+import homeMain from '../views/home/home-main.vue' // 引入 主页内容变化区域
 
 Vue.use(VueRouter)
 
@@ -18,7 +18,8 @@ const routes = [
       { path: 'articles', component: () => import('../views/articles') },
       { path: 'publish', component: () => import('../views/publish') },
       { path: 'publish/:articleId', component: () => import('../views/publish') },
-      { path: 'userInfo', component: () => import('../views/account') }]
+      { path: 'userInfo', component: () => import('../views/account') },
+      { path: 'picture', component: () => import('../views/picture') }]
   },
   { path: '/login', component: login }
   // {

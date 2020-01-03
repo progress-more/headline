@@ -49,7 +49,7 @@
       </el-form>
       <!-- 文章内容部分 -->
       <el-row class="total" type='flex' align='middle'>
-        <span>共找到1000条符合条件的内容</span>
+        <span>共找到{{page.total}}条符合条件的内容</span>
       </el-row>
       <div class="article-item" v-for="item in list" :key="item.id.toString()">
          <!-- 左侧 -->
