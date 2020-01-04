@@ -85,6 +85,7 @@
 </template>
 
 <script>
+import { getArticles, getChannels } from '../../action/article'
 export default {
   data () {
     return {
@@ -200,22 +201,16 @@ export default {
       this.getArticles(params)
     },
     // 页面结构创建完成后 需将页面上的数据变成动态的 so 请求文章数据
-    getArticles (params) {
-      this.$axios({
-        url: '/articles',
-        params
-      }).then(res => {
-        this.list = res.data.results// 获取文章列表数据
-        this.page.total = res.data.total_count
-      })
+
+    async getChannels () {
+      let result = await getChannels()
+      this.channels = result.data.channels
     },
-    // 获取所有频道
-    getChannels () {
-      this.$axios({
-        url: '/channels'
-      }).then(res => {
-        this.channels = res.data.channels
-      })
+    // 获取文章列表数据
+    async  getArticles (params) {
+      let result = await getArticles() // 调用获取文章模块
+      this.list = result.data.results // 获取文章列表数据
+      this.page.total = result.data.total_count // 总数
     }
   },
   created () {
