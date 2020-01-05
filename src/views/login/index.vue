@@ -81,7 +81,7 @@ export default {
             method: 'post', // 类型
             data: this.loginForm// body参数
           }).then(res => {
-            console.log(res)
+            // console.log(res)
             // 用户信息匹配时
             // 前端缓存 登陆成功返回给我们的令牌 且跳转到主页
             window.localStorage.setItem('user-token', res.data.token)
